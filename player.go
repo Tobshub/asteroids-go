@@ -43,8 +43,8 @@ func (p *Player) Update() {
 
 	if p.Velocity > 0 {
 		displace_x, displace_y := DisplacementComponents(p.Velocity, p.Direction)
-		new_x := p.Center.X + float32(displace_x)
-		new_y := p.Center.Y + float32(displace_y)
+		new_x := p.Center.X + displace_x
+		new_y := p.Center.Y + displace_y
 
 		if new_x < 0 {
 			p.Center.X = 0
@@ -60,9 +60,9 @@ func (p *Player) Update() {
 	}
 }
 
-func DisplacementComponents(v float32, angle int32) (int32, int32) {
-	x := int32(float32(math.Cos(DegToRad(angle))) * v)
-	y := int32(float32(math.Sin(DegToRad(angle))) * v)
+func DisplacementComponents(v float32, angle int32) (float32, float32) {
+	x := float32(math.Cos(DegToRad(angle))) * v
+	y := float32(math.Sin(DegToRad(angle))) * v
 
 	return x * -1, y
 }
