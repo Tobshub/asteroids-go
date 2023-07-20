@@ -31,12 +31,11 @@ func main() {
 func InitGame() {
 	// init player
 	PLAYER = Player{
-		Width:        28,
-		Height:       32,
-		Center:       rl.Vector2{X: float32(SCREEN_WIDTH/2 - PLAYER.Width), Y: float32(SCREEN_HEIGHT/2 - PLAYER.Height)},
-		Velocity:     0,
-		Acceleration: 0,
-		Rotation:     270,
+		Width:    28,
+		Height:   32,
+		Center:   rl.Vector2{X: float32(SCREEN_WIDTH/2 - PLAYER.Width), Y: float32(SCREEN_HEIGHT/2 - PLAYER.Height)},
+		Velocity: 0,
+		Rotation: 270,
 	}
 }
 

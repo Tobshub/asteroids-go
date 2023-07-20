@@ -7,18 +7,19 @@ import (
 )
 
 const (
-	MAX_PLAYER_SPEED int32 = 10
-	ROTATION_SPEED   int32 = 2
+	MAX_PLAYER_VELOCITY float32 = 8
+	PLAYER_ACCELERATION         = .2
+	ROTATION_SPEED      int32   = 2
 )
 
 type Player struct {
 	Width  int32
 	Height int32
 
-	Center       rl.Vector2
-	Velocity     int32
-	Rotation     int32
-	Acceleration int32
+	Center   rl.Vector2
+	Rotation int32
+
+	Velocity float32
 }
 
 func (p *Player) Update() {
@@ -33,6 +34,22 @@ func (p *Player) Update() {
 			p.Rotation = 0
 		}
 	}
+
+	if rl.IsKeyDown(rl.KeyUp) {
+		p.Velocity = float32(math.Min(float64(MAX_PLAYER_VELOCITY), float64(p.Velocity+PLAYER_ACCELERATION)))
+		displace_x, displace_y := DisplacementComponents(p)
+		p.Center.X += float32(displace_x)
+		p.Center.Y += float32(displace_y)
+	} else {
+		p.Velocity -= float32(math.Max(0, float64(p.Velocity-PLAYER_ACCELERATION)))
+	}
+}
+
+func DisplacementComponents(p *Player) (int32, int32) {
+	x := int32(float32(math.Cos(DegToRad(p.Rotation))) * p.Velocity)
+	y := int32(float32(math.Sin(DegToRad(p.Rotation))) * p.Velocity)
+
+	return x * -1, y
 }
 
 func RotationComponents(rotation int32) (float32, float32) {
