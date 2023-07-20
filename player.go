@@ -9,29 +9,29 @@ import (
 const (
 	MAX_PLAYER_VELOCITY float32 = 10
 	PLAYER_ACCELERATION         = .2
-	ROTATION_SPEED      int32   = 4
+	ROTATION_SPEED      int32   = 5
 )
 
 type Player struct {
 	Width  int32
 	Height int32
 
-	Center   rl.Vector2
-	Rotation int32
+	Center    rl.Vector2
+	Direction int32 // direction in degrees
 
 	Velocity float32
 }
 
 func (p *Player) Update() {
 	if rl.IsKeyDown(rl.KeyRight) {
-		p.Rotation -= ROTATION_SPEED
-		if p.Rotation < 0 {
-			p.Rotation = 360
+		p.Direction -= ROTATION_SPEED
+		if p.Direction < 0 {
+			p.Direction = 360
 		}
 	} else if rl.IsKeyDown(rl.KeyLeft) {
-		p.Rotation += ROTATION_SPEED
-		if p.Rotation > 360 {
-			p.Rotation = 0
+		p.Direction += ROTATION_SPEED
+		if p.Direction > 360 {
+			p.Direction = 0
 		}
 	}
 
@@ -61,8 +61,8 @@ func (p *Player) Update() {
 }
 
 func DisplacementComponents(p *Player) (int32, int32) {
-	x := int32(float32(math.Cos(DegToRad(p.Rotation))) * p.Velocity)
-	y := int32(float32(math.Sin(DegToRad(p.Rotation))) * p.Velocity)
+	x := int32(float32(math.Cos(DegToRad(p.Direction))) * p.Velocity)
+	y := int32(float32(math.Sin(DegToRad(p.Direction))) * p.Velocity)
 
 	return x * -1, y
 }
@@ -82,19 +82,19 @@ func DerivePoints(distance_x float32, distance_y float32, rotation int32) (float
 }
 
 func (p *Player) Draw() {
-	v1_x, v1_y := DerivePoints(0, float32(p.Height/2), p.Rotation)
+	v1_x, v1_y := DerivePoints(0, float32(p.Height/2), p.Direction)
 	v1 := rl.Vector2{
 		X: p.Center.X + v1_x,
 		Y: p.Center.Y + v1_y,
 	}
 
-	v2_x, v2_y := DerivePoints(float32(p.Width/2), -1*float32(p.Height/2), p.Rotation)
+	v2_x, v2_y := DerivePoints(float32(p.Width/2), -1*float32(p.Height/2), p.Direction)
 	v2 := rl.Vector2{
 		X: p.Center.X + v2_x,
 		Y: p.Center.Y + v2_y,
 	}
 
-	v3_x, v3_y := DerivePoints(-1*float32(p.Width/2), -1*float32(p.Height/2), p.Rotation)
+	v3_x, v3_y := DerivePoints(-1*float32(p.Width/2), -1*float32(p.Height/2), p.Direction)
 	v3 := rl.Vector2{
 		X: p.Center.X + v3_x,
 		Y: p.Center.Y + v3_y,
