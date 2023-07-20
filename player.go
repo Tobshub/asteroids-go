@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	MAX_PLAYER_VELOCITY float32 = 8
+	MAX_PLAYER_VELOCITY float32 = 10
 	PLAYER_ACCELERATION         = .2
-	ROTATION_SPEED      int32   = 2
+	ROTATION_SPEED      int32   = 4
 )
 
 type Player struct {
@@ -37,11 +37,26 @@ func (p *Player) Update() {
 
 	if rl.IsKeyDown(rl.KeyUp) {
 		p.Velocity = float32(math.Min(float64(MAX_PLAYER_VELOCITY), float64(p.Velocity+PLAYER_ACCELERATION)))
-		displace_x, displace_y := DisplacementComponents(p)
-		p.Center.X += float32(displace_x)
-		p.Center.Y += float32(displace_y)
 	} else {
-		p.Velocity -= float32(math.Max(0, float64(p.Velocity-PLAYER_ACCELERATION)))
+		p.Velocity = float32(math.Max(0, float64(p.Velocity-PLAYER_ACCELERATION*2)))
+	}
+
+	if p.Velocity > 0 {
+		displace_x, displace_y := DisplacementComponents(p)
+		new_x := p.Center.X + float32(displace_x)
+		new_y := p.Center.Y + float32(displace_y)
+
+		if new_x < 0 {
+			p.Center.X = 0
+		} else {
+			p.Center.X = float32(math.Min(float64(SCREEN_WIDTH), float64(new_x)))
+		}
+
+		if new_y < 0 {
+			p.Center.Y = 0
+		} else {
+			p.Center.Y = float32(math.Min(float64(SCREEN_HEIGHT), float64(new_y)))
+		}
 	}
 }
 
