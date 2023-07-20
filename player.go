@@ -23,14 +23,14 @@ type Player struct {
 
 func (p *Player) Update() {
 	if rl.IsKeyDown(rl.KeyRight) {
-		p.Rotation += ROTATION_SPEED
-		if p.Rotation > 360 {
-			p.Rotation = 0
-		}
-	} else if rl.IsKeyDown(rl.KeyLeft) {
 		p.Rotation -= ROTATION_SPEED
 		if p.Rotation < 0 {
 			p.Rotation = 360
+		}
+	} else if rl.IsKeyDown(rl.KeyLeft) {
+		p.Rotation += ROTATION_SPEED
+		if p.Rotation > 360 {
+			p.Rotation = 0
 		}
 	}
 }
