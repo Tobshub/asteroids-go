@@ -10,17 +10,14 @@ const (
 )
 
 type Mine struct {
-	Center    rl.Vector2
-	Direction int32
-
+	Center   rl.Vector2
 	LifeTime int
 }
 
 func PlaceMine() {
 	MINES = append(MINES, Mine{
-		Center:    rl.Vector2{X: PLAYER.Center.X, Y: PLAYER.Center.Y},
-		Direction: PLAYER.Direction,
-		LifeTime:  NEW_MINE_LIFETIME,
+		Center:   rl.Vector2{X: PLAYER.Center.X, Y: PLAYER.Center.Y},
+		LifeTime: NEW_MINE_LIFETIME,
 	})
 }
 
@@ -34,7 +31,7 @@ func (mine *Mine) Update() bool {
 }
 
 func (mine *Mine) Draw() {
-	rl.DrawPoly(mine.Center, 4, MINE_SIZE, float32(mine.Direction), rl.Red)
+	rl.DrawPoly(mine.Center, 4, MINE_SIZE, 45, rl.Red)
 }
 
 func DetonateMine(index int) {
