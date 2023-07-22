@@ -6,6 +6,7 @@ const (
 	SCREEN_WIDTH      int32 = 800
 	SCREEN_HEIGHT     int32 = 600
 	INITIAL_ASTERIODS int   = 5
+	GAME_SPEED              = 60
 )
 
 var (
@@ -73,7 +74,7 @@ func UpdateGame() {
 		}
 	} else {
 		frame_count++
-		if frame_count%60 == 0 {
+		if frame_count%GAME_SPEED == 0 {
 			SpawnAsteroidFromOrigin(RandomAsteroidOrigin())
 		}
 
