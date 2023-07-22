@@ -6,7 +6,7 @@ const (
 	SCREEN_WIDTH      int32 = 800
 	SCREEN_HEIGHT     int32 = 600
 	INITIAL_ASTERIODS int   = 5
-	GAME_SPEED              = 60
+	GAME_SPEED              = 50
 )
 
 var (
