@@ -3,8 +3,7 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 const (
-	LASER_SPEED = 2
-	MINE_SIZE   = 10
+	MINE_SIZE = 10
 
 	MAX_MINE_COUNT    = 3
 	NEW_MINE_LIFETIME = 500
