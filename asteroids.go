@@ -51,7 +51,7 @@ func RandomAsteroidVelocity() float32 {
 	return float32(MIN_ASTEROID_VELOCITY) + float32(MAX_ASTEROID_VELOCITY-MIN_ASTEROID_VELOCITY)*rand.Float32()
 }
 
-func RemoveAsteroid(index int) {
+func ExplodeAsteroid(index int) {
 	ASTEROIDS = append(ASTEROIDS[:index], ASTEROIDS[index+1:]...)
 }
 

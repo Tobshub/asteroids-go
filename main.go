@@ -3,15 +3,18 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 const (
-	SCREEN_WIDTH      int32 = 800
-	SCREEN_HEIGHT     int32 = 600
-	INITIAL_ASTERIODS int   = 5
-	GAME_SPEED              = 50
+	SCREEN_WIDTH  int32 = 800
+	SCREEN_HEIGHT int32 = 600
+
+	INITIAL_ASTERIODS int = 5
+
+	GAME_SPEED = 50
 )
 
 var (
 	PLAYER    Player
 	ASTEROIDS []Asteroid
+	MINES     []Mine
 	has_lost  bool = false
 )
 
@@ -43,6 +46,7 @@ func InitGame() {
 		Direction: 270,
 	}
 
+	MINES = []Mine{}
 	ASTEROIDS = []Asteroid{}
 
 	for i := 0; i < INITIAL_ASTERIODS; i++ {
@@ -57,6 +61,10 @@ func DrawGame() {
 		rl.DrawText("Press ENTER to restart", SCREEN_WIDTH/2-80, SCREEN_HEIGHT/2+25, 16, rl.Gray)
 	} else {
 		PLAYER.Draw()
+
+		for _, laser := range MINES {
+			laser.Draw()
+		}
 
 		for _, asteroid := range ASTEROIDS {
 			asteroid.Draw()
@@ -74,12 +82,43 @@ func UpdateGame() {
 		}
 	} else {
 		frame_count++
+
 		if frame_count%GAME_SPEED == 0 {
 			SpawnAsteroidFromOrigin(RandomAsteroidOrigin())
 		}
 
+		if rl.IsKeyPressed(rl.KeySpace) && len(MINES) <= MAX_MINE_COUNT {
+			PlaceMine()
+		}
+
+	asteroid_loop:
 		for i := 0; i < len(ASTEROIDS); i++ {
-			var asteroid *Asteroid = &ASTEROIDS[i]
+			asteroid := &ASTEROIDS[i]
+
+			// check if laser collision || laser out of bounds
+			for j := 0; j < len(MINES); j++ {
+				mine := &MINES[j]
+
+				if rl.CheckCollisionCircleRec(
+					asteroid.Position, float32(asteroid.Size),
+					rl.Rectangle{
+						X:      mine.Center.X - float32(MINE_SIZE/2),
+						Y:      mine.Center.Y - float32(MINE_SIZE/2),
+						Width:  MINE_SIZE,
+						Height: MINE_SIZE,
+					},
+				) {
+					ExplodeAsteroid(i)
+					DetonateMine(j)
+					continue asteroid_loop
+				}
+
+				life_time_over := mine.Update()
+
+				if life_time_over {
+					DetonateMine(j)
+				}
+			}
 
 			if (rl.CheckCollisionCircleRec(
 				asteroid.Position,
@@ -98,7 +137,7 @@ func UpdateGame() {
 			is_out := asteroid.Update()
 
 			if is_out {
-				RemoveAsteroid(i)
+				ExplodeAsteroid(i)
 			}
 		}
 
