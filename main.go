@@ -53,6 +53,7 @@ func DrawGame() {
 	rl.ClearBackground(rl.RayWhite)
 	if has_lost {
 		rl.DrawText("Game Over", SCREEN_WIDTH/2-40, SCREEN_HEIGHT/2-10, 20, rl.Red)
+		rl.DrawText("Press ENTER to restart", SCREEN_WIDTH/2-80, SCREEN_HEIGHT/2+25, 16, rl.Gray)
 	} else {
 		PLAYER.Draw()
 
@@ -66,7 +67,7 @@ var frame_count int = 0
 
 func UpdateGame() {
 	if has_lost {
-		if rl.IsKeyPressed(rl.KeySpace) {
+		if rl.IsKeyPressed(rl.KeyEnter) {
 			has_lost = false
 			InitGame()
 		}
