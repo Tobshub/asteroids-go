@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	MAX_ASTEROID_VELOCITY int32 = 8
-	MIN_ASTEROID_VELOCITY int32 = 4
+	MAX_ASTEROID_VELOCITY int32 = 6
+	MIN_ASTEROID_VELOCITY int32 = 2
 )
 
 type AsteroidSize int32
@@ -20,43 +20,46 @@ const (
 )
 
 type Asteroid struct {
-	Size AsteroidSize
+	Size   AsteroidSize
+	Origin AsteroidSpawn
 
 	Position  rl.Vector2
 	Velocity  float32
 	Direction int32
 }
 
-func (a *Asteroid) Update() {
+func (a *Asteroid) Update() bool {
 	displace_x, displace_y := DisplacementComponents(a.Velocity, a.Direction)
 
 	a.Position.X += displace_x
 	a.Position.Y += displace_y
+
+	if a.Position.X < 0 || a.Position.X > float32(SCREEN_WIDTH) || a.Position.Y < 0 || a.Position.Y > float32(SCREEN_HEIGHT) {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (a *Asteroid) Draw() {
 	rl.DrawCircleV(a.Position, float32(a.Size), rl.DarkGray)
 }
 
-func RandomAsteroidPosition(_size AsteroidSize, exclusion_area rl.Rectangle) rl.Vector2 {
-	x := exclusion_area.X
-	y := exclusion_area.Y
-
-	var size float32 = float32(_size)
-
-	for (x >= exclusion_area.X-size && x <= exclusion_area.X+exclusion_area.Width+size) ||
-		(y >= exclusion_area.Y-size && y <= exclusion_area.Y+exclusion_area.Height+size) {
-		x = rand.Float32() * float32(SCREEN_WIDTH)
-		y = rand.Float32() * float32(SCREEN_HEIGHT)
-	}
-
-	return rl.Vector2{X: x, Y: y}
-}
-
 func RandomAsteroidVelocity() float32 {
 	return float32(MIN_ASTEROID_VELOCITY) + float32(MAX_ASTEROID_VELOCITY-MIN_ASTEROID_VELOCITY)*rand.Float32()
 }
 
-func RandomAsteroidDirection() int32 {
-	return int32(rand.Intn(360))
+func RemoveAsteroid(index int) {
+	ASTEROIDS = append(ASTEROIDS[:index], ASTEROIDS[index+1:]...)
+}
+
+func SpawnAsteroid(origin AsteroidSpawn, x float32, y float32, direction int32) {
+	asteroid := Asteroid{
+		Size:      Large,
+		Origin:    origin,
+		Position:  rl.Vector2{X: x, Y: y},
+		Velocity:  RandomAsteroidVelocity(),
+		Direction: direction,
+	}
+	ASTEROIDS = append(ASTEROIDS, asteroid)
 }
