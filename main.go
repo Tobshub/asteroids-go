@@ -15,7 +15,9 @@ var (
 	PLAYER    Player
 	ASTEROIDS []Asteroid
 	MINES     []Mine
-	has_lost  bool = false
+	LASERS    []Laser
+
+	has_lost bool = false
 )
 
 func main() {
@@ -47,6 +49,7 @@ func InitGame() {
 	}
 
 	MINES = []Mine{}
+	LASERS = []Laser{}
 	ASTEROIDS = []Asteroid{}
 
 	for i := 0; i < INITIAL_ASTERIODS; i++ {
@@ -62,8 +65,12 @@ func DrawGame() {
 	} else {
 		PLAYER.Draw()
 
-		for _, laser := range MINES {
+		for _, laser := range LASERS {
 			laser.Draw()
+		}
+
+		for _, mine := range MINES {
+			mine.Draw()
 		}
 
 		for _, asteroid := range ASTEROIDS {
@@ -87,8 +94,10 @@ func UpdateGame() {
 			SpawnAsteroidFromOrigin(RandomAsteroidOrigin())
 		}
 
-		if rl.IsKeyPressed(rl.KeySpace) && len(MINES) <= MAX_MINE_COUNT {
+		if rl.IsKeyPressed(rl.KeyDown) && len(MINES) <= MAX_MINE_COUNT {
 			PlaceMine()
+		} else if rl.IsKeyPressed(rl.KeySpace) {
+			ShootLaser()
 		}
 
 	asteroid_loop:
@@ -116,6 +125,30 @@ func UpdateGame() {
 
 				if life_time_over {
 					DetonateMine(j)
+				}
+			}
+
+			for j := 0; j < len(LASERS); j++ {
+				laser := &LASERS[j]
+
+				if rl.CheckCollisionCircleRec(
+					asteroid.Position, float32(asteroid.Size),
+					rl.Rectangle{
+						X:      laser.Center.X - float32(LASER_WIDTH/2),
+						Y:      laser.Center.Y - float32(LASER_HEIGHT/2),
+						Width:  LASER_WIDTH,
+						Height: LASER_HEIGHT,
+					},
+				) {
+					ExplodeAsteroid(i)
+					VaporizeLaser(j)
+					continue asteroid_loop
+				}
+
+				is_out := laser.Update()
+
+				if is_out {
+					VaporizeLaser(j)
 				}
 			}
 
