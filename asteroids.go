@@ -33,8 +33,10 @@ func (a *Asteroid) Update() bool {
 
 	a.Position.X += displace_x
 	a.Position.Y += displace_y
+	size := float32(a.Size)
 
-	if a.Position.X < 0 || a.Position.X > float32(SCREEN_WIDTH) || a.Position.Y < 0 || a.Position.Y > float32(SCREEN_HEIGHT) {
+	if (a.Position.X+size < 0 && a.Origin != Left) || (a.Position.X-size > float32(SCREEN_WIDTH) && a.Origin != Right) ||
+		(a.Position.Y+size < 0 && a.Origin != Top) || (a.Position.Y-size > float32(SCREEN_HEIGHT) && a.Origin != Bottom) {
 		return true
 	} else {
 		return false

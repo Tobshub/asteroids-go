@@ -51,55 +51,59 @@ func InitGame() {
 
 func DrawGame() {
 	rl.ClearBackground(rl.RayWhite)
-	PLAYER.Draw()
+	if has_lost {
+		rl.DrawText("Game Over", SCREEN_WIDTH/2-40, SCREEN_HEIGHT/2-10, 20, rl.Red)
+	} else {
+		PLAYER.Draw()
 
-	for _, asteroid := range ASTEROIDS {
-		asteroid.Draw()
+		for _, asteroid := range ASTEROIDS {
+			asteroid.Draw()
+		}
 	}
 }
 
 var frame_count int = 0
 
 func UpdateGame() {
-	frame_count++
-	if frame_count%60 == 0 {
-		SpawnAsteroidFromOrigin(RandomAsteroidOrigin())
-	}
-
-	for i := 0; i < len(ASTEROIDS); i++ {
-		var asteroid *Asteroid = &ASTEROIDS[i]
-
-		if (rl.CheckCollisionCircleRec(
-			asteroid.Position,
-			float32(asteroid.Size),
-			rl.Rectangle{
-				X:      PLAYER.Center.X - float32(PLAYER.Width/2),
-				Y:      PLAYER.Center.Y - float32(PLAYER.Height/2),
-				Width:  float32(PLAYER.Width),
-				Height: float32(PLAYER.Height),
-			},
-		)) {
-			has_lost = true
-			break
+	if has_lost {
+		if rl.IsKeyPressed(rl.KeySpace) {
+			has_lost = false
+			InitGame()
+		}
+	} else {
+		frame_count++
+		if frame_count%60 == 0 {
+			SpawnAsteroidFromOrigin(RandomAsteroidOrigin())
 		}
 
-		/** is_out :=  */
-		asteroid.Update()
+		for i := 0; i < len(ASTEROIDS); i++ {
+			var asteroid *Asteroid = &ASTEROIDS[i]
 
-		// if is_out {
-		// 	RemoveAsteroid(i)
-		// }
+			if (rl.CheckCollisionCircleRec(
+				asteroid.Position,
+				float32(asteroid.Size),
+				rl.Rectangle{
+					X:      PLAYER.Center.X - float32(PLAYER.Width/2),
+					Y:      PLAYER.Center.Y - float32(PLAYER.Height/2),
+					Width:  float32(PLAYER.Width),
+					Height: float32(PLAYER.Height),
+				},
+			)) {
+				has_lost = true
+				break
+			}
+
+			is_out := asteroid.Update()
+
+			if is_out {
+				RemoveAsteroid(i)
+			}
+		}
+
+		if has_lost {
+			return
+		}
+
+		PLAYER.Update()
 	}
-
-	if has_lost {
-		EndGame()
-		return
-	}
-
-	PLAYER.Update()
-}
-
-func EndGame() {
-	has_lost = false
-	InitGame()
 }
