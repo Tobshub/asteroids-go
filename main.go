@@ -95,7 +95,6 @@ func UpdateGame() {
 		for i := 0; i < len(ASTEROIDS); i++ {
 			asteroid := &ASTEROIDS[i]
 
-			// check if laser collision || laser out of bounds
 			for j := 0; j < len(MINES); j++ {
 				mine := &MINES[j]
 
