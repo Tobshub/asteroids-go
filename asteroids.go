@@ -1,10 +1,6 @@
 package main
 
-import (
-	"math/rand"
-
-	rl "github.com/gen2brain/raylib-go/raylib"
-)
+import rl "github.com/gen2brain/raylib-go/raylib"
 
 const (
 	MAX_ASTEROID_VELOCITY int32 = 6
@@ -47,21 +43,58 @@ func (a *Asteroid) Draw() {
 	rl.DrawCircleV(a.Position, float32(a.Size), rl.DarkGray)
 }
 
-func RandomAsteroidVelocity() float32 {
-	return float32(MIN_ASTEROID_VELOCITY) + float32(MAX_ASTEROID_VELOCITY-MIN_ASTEROID_VELOCITY)*rand.Float32()
-}
-
 func ExplodeAsteroid(index int) {
+	asteroid := ASTEROIDS[index]
+
+	if asteroid.Size != Small {
+		var new_size AsteroidSize
+
+		if asteroid.Size == Large {
+			new_size = Medium
+		} else if asteroid.Size == Medium {
+			new_size = Small
+		}
+
+		CreateLeftSideDebris(&asteroid, new_size)
+		CreateRightSideDebris(&asteroid, new_size)
+	}
+
 	ASTEROIDS = append(ASTEROIDS[:index], ASTEROIDS[index+1:]...)
 }
 
-func SpawnAsteroid(origin AsteroidSpawn, x float32, y float32, direction int32) {
+func CreateLeftSideDebris(asteroid *Asteroid, size AsteroidSize) {
+	// TODO: fix direction
+	SpawnAsteroid(
+		asteroid.Origin,
+		asteroid.Position.X-float32(asteroid.Size),
+		asteroid.Position.Y-float32(asteroid.Size),
+		asteroid.Direction+90, size,
+		asteroid.Velocity,
+	)
+}
+
+func CreateRightSideDebris(asteroid *Asteroid, size AsteroidSize) {
+	// TODO: fix direction
+	SpawnAsteroid(
+		asteroid.Origin,
+		asteroid.Position.X+float32(asteroid.Size),
+		asteroid.Position.Y+float32(asteroid.Size),
+		asteroid.Direction-90, size,
+		asteroid.Velocity,
+	)
+}
+
+func SpawnAsteroid(origin AsteroidSpawn, x float32, y float32, direction int32, size AsteroidSize, v float32) {
 	asteroid := Asteroid{
-		Size:      Large,
+		Size:      size,
 		Origin:    origin,
 		Position:  rl.Vector2{X: x, Y: y},
-		Velocity:  RandomAsteroidVelocity(),
+		Velocity:  v,
 		Direction: direction,
 	}
 	ASTEROIDS = append(ASTEROIDS, asteroid)
+}
+
+func DeSpawnAsteroid(index int) {
+	ASTEROIDS = append(ASTEROIDS[:index], ASTEROIDS[index+1:]...)
 }

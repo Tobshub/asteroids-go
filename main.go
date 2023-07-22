@@ -136,7 +136,7 @@ func UpdateGame() {
 			is_out := asteroid.Update()
 
 			if is_out {
-				ExplodeAsteroid(i)
+				DeSpawnAsteroid(i)
 			}
 		}
 

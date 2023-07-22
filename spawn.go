@@ -35,6 +35,10 @@ func RandomAsteroidDirection(min int32, max int32) int32 {
 	}
 }
 
+func RandomAsteroidVelocity() float32 {
+	return float32(MIN_ASTEROID_VELOCITY) + float32(MAX_ASTEROID_VELOCITY-MIN_ASTEROID_VELOCITY)*rand.Float32()
+}
+
 func RandomFloat32(min float32, max float32) float32 {
 	return min + rand.Float32()*(max-min)
 }
@@ -71,7 +75,7 @@ func SpawnAsteroidFromOrigin(origin AsteroidSpawn) {
 		y = RandomY()
 		direction = RandomAsteroidDirection(270, 270+180)
 	}
-	SpawnAsteroid(origin, x, y, direction)
+	SpawnAsteroid(origin, x, y, direction, Large, RandomAsteroidVelocity())
 }
 
 func RandomAsteroidOrigin() AsteroidSpawn {
